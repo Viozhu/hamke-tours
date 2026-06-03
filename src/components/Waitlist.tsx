@@ -1,22 +1,68 @@
 "use client";
 import { useState } from "react";
 import Icon from "@/components/ui/Icon";
-import { TOURS, BRAND } from "@/lib/data";
+import type { Tour } from "@/lib/data";
+import { BRAND } from "@/lib/data";
 
-interface FormState { name: string; email: string; tour: string; }
+interface FormState {
+  name: string;
+  email: string;
+  whatsapp: string;
+  tour: string;
+  personas: string;
+  pais: string;
+}
 
-export default function Waitlist() {
-  const [form, setForm] = useState<FormState>({ name: "", email: "", tour: TOURS[0].id });
+interface WaitlistProps {
+  tours?: Tour[];
+}
+
+export default function Waitlist({ tours = [] }: WaitlistProps) {
+  const [form, setForm] = useState<FormState>({
+    name: "",
+    email: "",
+    whatsapp: "",
+    tour: tours[0]?.id ?? "",
+    personas: "1",
+    pais: "",
+  });
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const set = (k: keyof FormState) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setForm((prev) => ({ ...prev, [k]: e.target.value }));
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim()) return;
-    try { localStorage.setItem("hamke_waitlist", JSON.stringify({ ...form, at: Date.now() })); } catch { /* */ }
+    setLoading(true);
+    setError(false);
+
+    const url = process.env.NEXT_PUBLIC_SHEETS_URL;
+    if (url) {
+      try {
+        await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify({
+            nombre: form.name.trim(),
+            email: form.email.trim(),
+            whatsapp: form.whatsapp.trim(),
+            tour: form.tour,
+            personas: Number(form.personas),
+            pais: form.pais.trim(),
+          }),
+        });
+      } catch {
+        setLoading(false);
+        setError(true);
+        return;
+      }
+    }
+
+    setLoading(false);
     setSent(true);
   };
 
@@ -65,13 +111,53 @@ export default function Waitlist() {
                   onChange={set("email")}
                   required
                 />
-                <select className="form-field" value={form.tour} onChange={set("tour")}>
-                  {TOURS.map((t) => (
-                    <option key={t.id} value={t.id}>{t.title} · {t.dates}</option>
-                  ))}
-                </select>
-                <button type="submit" className="btn btn-primary btn-lg btn-block" style={{ marginTop: 4 }}>
-                  Unirme a la lista de espera
+                <input
+                  className="form-field"
+                  type="tel"
+                  placeholder="WhatsApp (con código de país, ej: +52 55 1234 5678)"
+                  value={form.whatsapp}
+                  onChange={set("whatsapp")}
+                />
+                <div style={{ display: "flex", gap: 12 }}>
+                  <select
+                    className="form-field"
+                    value={form.tour}
+                    onChange={set("tour")}
+                    style={{ flex: 2 }}
+                  >
+                    {tours.map((t) => (
+                      <option key={t.id} value={t.id}>{t.title} · {t.dates}</option>
+                    ))}
+                  </select>
+                  <select
+                    className="form-field"
+                    value={form.personas}
+                    onChange={set("personas")}
+                    style={{ flex: 1 }}
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                      <option key={n} value={n}>{n} {n === 1 ? "persona" : "personas"}</option>
+                    ))}
+                  </select>
+                </div>
+                <input
+                  className="form-field"
+                  placeholder="País de origen (ej: México)"
+                  value={form.pais}
+                  onChange={set("pais")}
+                />
+                {error && (
+                  <p style={{ fontSize: 14, color: "var(--error, #c0392b)", margin: 0 }}>
+                    Hubo un error, intenta de nuevo.
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-lg btn-block"
+                  style={{ marginTop: 4 }}
+                  disabled={loading}
+                >
+                  {loading ? "Enviando…" : "Unirme a la lista de espera"}
                 </button>
               </form>
             ) : (
@@ -84,7 +170,7 @@ export default function Waitlist() {
                   <Icon name="check" size={28} />
                 </div>
                 <div style={{ fontFamily: "var(--display)", fontWeight: 700, fontSize: 24 }}>
-                  ¡Estás en la lista, {form.name.split(" ")[0]}! 🎉
+                  ¡Estás en la lista, {form.name.split(" ")[0]}!
                 </div>
                 <p style={{ fontSize: 17, lineHeight: 1.6, color: "var(--muted)" }}>
                   Te contactaremos muy pronto con todos los detalles de tu tour.

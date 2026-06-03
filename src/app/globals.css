@@ -281,6 +281,7 @@ p { margin: 0; }
   color: #fff;
 }
 @media (max-width: 920px) { .web-nav { display: none; } }
+@media (min-width: 921px) { .btn-hamburger { display: none; } }
 
 /* ─── Mobile menu overlay ───────────────────────────────────── */
 .web-menu {
@@ -300,7 +301,8 @@ p { margin: 0; }
   position: relative;
   min-height: 94vh;
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  justify-content: flex-end;
   overflow: hidden;
 }
 .web-hero .bg { position: absolute; inset: 0; }
@@ -321,7 +323,7 @@ p { margin: 0; }
 .hero-content {
   position: relative;
   z-index: 2;
-  padding-bottom: 84px;
+  padding-bottom: 36px;
   padding-top: 140px;
 }
 .hero-h1 {

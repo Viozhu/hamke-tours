@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Icon from "@/components/ui/Icon";
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import { BRAND } from "@/lib/data";
 
 const PLACES = ["Seúl", "DMZ", "Nami Island", "Suwon", "Gyeongju", "Busan"];
@@ -8,10 +8,7 @@ export default function Hero() {
   return (
     <section id="top" className="web-hero">
       <div className="bg">
-        <ImagePlaceholder
-          label="Foto full-bleed — paisaje icónico de Corea (otoño / Seúl)"
-          style={{ width: "100%", height: "100%", borderRadius: 0 }}
-        />
+        <Image src="/hero.avif" alt="Paisaje icónico de Corea" fill style={{ objectFit: "cover", objectPosition: "center" }} priority />
       </div>
       <div className="scrim" />
       <div className="scrim2" />
@@ -57,7 +54,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="hero-stats" style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}>
+      <div className="hero-stats">
         <div className="container">
           <div className="stat"><div className="n">{BRAND.followers}</div><div className="l">viajeros nos siguen</div></div>
           <div className="stat"><div className="n">100%</div><div className="l">en español</div></div>

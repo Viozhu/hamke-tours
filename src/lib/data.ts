@@ -25,6 +25,15 @@ export interface Tour {
   priceLabel: string;
   slot: string;
   placeholder: string;
+  cupos?: number;
+}
+
+export interface Testimonial {
+  id: string;
+  name: string;
+  place: string;
+  quote: string;
+  photoUrl: string;
 }
 
 export const VALUE_PROPS = [
@@ -97,26 +106,29 @@ export const GALLERY = [
   { id: "g-noche",     label: "Seúl de noche",          span: 1 },
 ] as const;
 
-export const TESTIMONIALS = [
+export const TESTIMONIALS: Testimonial[] = [
   {
+    id: "t-1",
     quote: "Fue mejor de lo que imaginé. La paciencia y la serenidad de Chang para llevar al grupo no tienen precio. La mejor decisión que tomé.",
     name: "Holi M.",
     place: "Viajera 2025 · 🇲🇽",
-    slot: "t-1",
+    photoUrl: "",
   },
   {
+    id: "t-2",
     quote: "Conocer un país tan maravilloso de la mano de alguien que lo vive de verdad cambia todo. Nunca olvidaré este viaje.",
     name: "Carolina R.",
     place: "Tour Otoño · 🇨🇴",
-    slot: "t-2",
+    photoUrl: "",
   },
   {
+    id: "t-3",
     quote: "Todo en español, todo resuelto. Solo me dediqué a disfrutar. Gente increíble y momentos que me llevo para siempre.",
     name: "Diego A.",
     place: "Tour 2024 · 🇦🇷",
-    slot: "t-3",
+    photoUrl: "",
   },
-] as const;
+];
 
 export const FAQ = [
   { q: "¿En qué idioma son los tours?",         a: "100% en español, de principio a fin. Tu guía habla tu idioma durante todo el viaje, así que no necesitas saber coreano ni inglés." },
