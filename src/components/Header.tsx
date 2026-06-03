@@ -29,7 +29,7 @@ export default function Header({ solid, overHero }: HeaderProps) {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <a className="btn btn-primary" href="#reservar" style={{ fontSize: 14 }}>Reservar</a>
           <button
-            className="btn btn-ghost"
+            className="btn btn-ghost btn-hamburger"
             aria-label="Menú"
             onClick={() => setMenu(true)}
             style={{ width: 46, height: 46, padding: 0, display: "grid", placeItems: "center" }}

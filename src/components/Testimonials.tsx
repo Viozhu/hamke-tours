@@ -1,8 +1,36 @@
 import Icon from "@/components/ui/Icon";
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
-import { TESTIMONIALS } from "@/lib/data";
+import { Testimonial, TESTIMONIALS } from "@/lib/data";
 
-export default function Testimonials() {
+interface TestimonialsProps {
+  testimonials?: Testimonial[];
+}
+
+function Avatar({ name, photoUrl }: { name: string; photoUrl: string }) {
+  if (photoUrl) {
+    return (
+      <img
+        src={photoUrl}
+        alt={name}
+        style={{ width: 46, height: 46, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
+      />
+    );
+  }
+  const initials = name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+  return (
+    <div
+      style={{
+        width: 46, height: 46, borderRadius: "50%", flexShrink: 0,
+        background: "var(--tint)", border: "1px solid var(--line)",
+        display: "grid", placeItems: "center",
+        fontWeight: 700, fontSize: 14, color: "var(--accent-fg)",
+      }}
+    >
+      {initials}
+    </div>
+  );
+}
+
+export default function Testimonials({ testimonials = [...TESTIMONIALS] }: TestimonialsProps) {
   return (
     <section id="testimonios" className="section" style={{ background: "var(--surface-2)" }}>
       <div className="container">
@@ -13,9 +41,9 @@ export default function Testimonials() {
           </h2>
         </div>
         <div className="grid-test reveal" style={{ marginTop: 44 }}>
-          {TESTIMONIALS.map((t) => (
+          {testimonials.map((t, idx) => (
             <figure
-              key={t.slot}
+              key={t.id || idx}
               className="card"
               style={{ margin: 0, padding: 26, display: "flex", flexDirection: "column", gap: 16 }}
             >
@@ -26,11 +54,7 @@ export default function Testimonials() {
                 &ldquo;{t.quote}&rdquo;
               </blockquote>
               <figcaption style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 12 }}>
-                <ImagePlaceholder
-                  label=""
-                  circle
-                  style={{ width: 46, height: 46, flexShrink: 0, minWidth: 46 }}
-                />
+                <Avatar name={t.name} photoUrl={t.photoUrl} />
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 15 }}>{t.name}</div>
                   <div style={{ fontSize: 13, color: "var(--muted)" }}>{t.place}</div>

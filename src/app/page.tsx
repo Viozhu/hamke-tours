@@ -11,10 +11,15 @@ import Faq from "@/components/Faq";
 import Waitlist from "@/components/Waitlist";
 import Footer from "@/components/Footer";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { fetchTours, fetchTestimonials } from "@/lib/sheets";
+import type { Tour, Testimonial } from "@/lib/data";
+import { TOURS, TESTIMONIALS } from "@/lib/data";
 
 export default function Home() {
   const [solid, setSolid] = useState(false);
   const [overHero, setOverHero] = useState(true);
+  const [tours, setTours] = useState<Tour[]>(TOURS as Tour[]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([...TESTIMONIALS]);
 
   useScrollReveal();
 
@@ -28,18 +33,23 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    fetchTours().then(setTours);
+    fetchTestimonials().then(setTestimonials);
+  }, []);
+
   return (
     <>
       <Header solid={solid} overHero={overHero} />
       <main>
         <Hero />
         <ValueProps />
-        <Tours />
+        <Tours tours={tours} />
         <Gallery />
-        <Testimonials />
+        <Testimonials testimonials={testimonials} />
         <About />
         <Faq />
-        <Waitlist />
+        <Waitlist tours={tours} />
       </main>
       <Footer />
     </>

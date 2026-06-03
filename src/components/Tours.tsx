@@ -1,8 +1,12 @@
 import TourCard from "@/components/TourCard";
 import Icon from "@/components/ui/Icon";
-import { TOURS, DAY_TOURS } from "@/lib/data";
+import { Tour, TOURS, DAY_TOURS } from "@/lib/data";
 
-export default function Tours() {
+interface ToursProps {
+  tours?: Tour[];
+}
+
+export default function Tours({ tours = TOURS as Tour[] }: ToursProps) {
   return (
     <section id="tours" className="section" style={{ background: "var(--surface-2)" }}>
       <div className="container">
@@ -12,7 +16,7 @@ export default function Tours() {
           <p className="section-sub">Cupos limitados por salida. Asegura tu lugar antes de que se llene.</p>
         </div>
         <div className="grid-tours reveal" style={{ marginTop: 44 }}>
-          {TOURS.map((t) => <TourCard key={t.id} t={t} />)}
+          {tours.map((t) => <TourCard key={t.id} t={t} />)}
         </div>
         <div className="reveal" style={{ marginTop: 50 }}>
           <div style={{ fontFamily: "var(--display)", fontWeight: 700, fontSize: 22, marginBottom: 4 }}>
