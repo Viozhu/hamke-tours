@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Icon from "@/components/ui/Icon";
 import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import type { Tour, TourStatus } from "@/lib/data";
@@ -13,10 +14,22 @@ export default function TourCard({ t }: { t: Tour }) {
   return (
     <div className="card" style={{ display: "flex", flexDirection: "column" }}>
       <div style={{ position: "relative" }}>
-        <ImagePlaceholder
-          label={t.placeholder}
-          style={{ width: "100%", height: 230, borderRadius: 0 }}
-        />
+        {t.placeholder?.startsWith("http") ? (
+          <div style={{ position: "relative", width: "100%", height: 230 }}>
+            <Image
+              src={t.placeholder}
+              alt={t.title}
+              fill
+              style={{ objectFit: "cover" }}
+              sizes="(max-width: 680px) 100vw, 33vw"
+            />
+          </div>
+        ) : (
+          <ImagePlaceholder
+            label={t.placeholder}
+            style={{ width: "100%", height: 230, borderRadius: 0 }}
+          />
+        )}
         <div style={{ position: "absolute", top: 14, left: 14, display: "flex", gap: 6, flexWrap: "wrap" }}>
           {t.popular && (
             <span className="badge badge-pop">
@@ -38,7 +51,7 @@ export default function TourCard({ t }: { t: Tour }) {
             <span style={{ display: "inline-flex", gap: 5, alignItems: "center" }}>
               <Icon name="cal" size={15} /> {t.dates}
             </span>
-            <span style={{ display: "inline-flex", gap: 5, alignItems: "center" }}>
+            <span style={{ display: "inline-flex", gap: 5, alignItems: "center", whiteSpace: "nowrap", flexShrink: 0 }}>
               <Icon name="clock" size={15} /> {t.days} días
             </span>
           </div>
