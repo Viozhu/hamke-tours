@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Icon from "@/components/ui/Icon";
-import ImagePlaceholder from "@/components/ui/ImagePlaceholder";
 import { BRAND } from "@/lib/data";
 
 export default function About() {
@@ -7,10 +7,15 @@ export default function About() {
     <section id="nosotros" className="section">
       <div className="container two-col reveal">
         <div className="card" style={{ position: "relative", overflow: "hidden" }}>
-          <ImagePlaceholder
-            label="Foto de Chang / el equipo"
-            style={{ width: "100%", height: 440, borderRadius: 0 }}
-          />
+          <div style={{ position: "relative", width: "100%", height: 440 }}>
+            <Image
+              src="/profile.jpg"
+              alt="Chang - Tu guía en Corea"
+              fill
+              style={{ objectFit: "cover" }}
+              sizes="(max-width: 680px) 100vw, 50vw"
+            />
+          </div>
           <div style={{ position: "absolute", bottom: 16, left: 16 }}>
             <span
               className="chip"
