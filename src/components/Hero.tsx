@@ -7,10 +7,12 @@ import { motion } from "framer-motion";
 
 const PLACES = ["Seúl", "DMZ", "Nami Island", "Suwon", "Gyeongju", "Busan"];
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 28 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1], delay },
+  transition: { duration: 0.7, ease: EASE, delay },
 });
 
 const fadeIn = (delay = 0) => ({
@@ -27,7 +29,7 @@ export default function Hero() {
         className="bg"
         initial={{ scale: 1.06, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1.4, ease: EASE }}
       >
         <Image
           src="/hero.avif"
@@ -77,7 +79,7 @@ export default function Hero() {
           style={{ display: "flex", gap: 9, flexWrap: "wrap", marginTop: 28 }}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.8 }}
+          transition={{ duration: 0.6, ease: EASE, delay: 0.8 }}
         >
           {PLACES.map((p, i) => (
             <motion.span
@@ -91,7 +93,7 @@ export default function Hero() {
               }}
               initial={{ opacity: 0, scale: 0.88 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.85 + i * 0.07 }}
+              transition={{ duration: 0.4, ease: EASE, delay: 0.85 + i * 0.07 }}
             >
               <Icon name="pin" size={14} /> {p}
             </motion.span>
@@ -112,7 +114,7 @@ export default function Hero() {
               className="stat"
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 1.05 + i * 0.08 }}
+              transition={{ duration: 0.5, ease: EASE, delay: 1.05 + i * 0.08 }}
             >
               <div className="n">{n}</div>
               <div className="l">{l}</div>
