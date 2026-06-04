@@ -1,0 +1,94 @@
+name: Fetch YouTube Videos
+
+# Runs daily at 8am UTC and on manual trigger
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch-videos:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch latest videos from YouTube API
+        id: fetch
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          CHANNEL_HANDLE: hamketours
+        run: |
+          # Resolve channel handle → channel ID
+          CHANNEL_ID=$(curl -s \
+            "https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=${CHANNEL_HANDLE}&key=${YOUTUBE_API_KEY}" \
+            | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['items'][0]['id'])")
+
+          echo "Channel ID: $CHANNEL_ID"
+
+          # Fetch latest 4 videos (uploads playlist = UC→UU prefix)
+          PLAYLIST_ID="UU${CHANNEL_ID:2}"
+
+          curl -s \
+            "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=4&playlistId=${PLAYLIST_ID}&key=${YOUTUBE_API_KEY}" \
+            | python3 -c "
+          import sys, json
+
+          data = json.load(sys.stdin)
+          videos = []
+          for item in data.get('items', []):
+              snippet = item['snippet']
+              vid_id  = snippet['resourceId']['videoId']
+              title   = snippet['title']
+              desc    = snippet.get('description', '').split('\n')[0][:80]
+              videos.append({'id': vid_id, 'title': title, 'desc': desc})
+
+          # Emit as JS array literal
+          lines = []
+          for v in videos:
+              title_esc = v['title'].replace('\\\\', '\\\\\\\\').replace(\"'\", \"\\\\'\")
+              desc_esc  = v['desc'].replace('\\\\', '\\\\\\\\').replace(\"'\", \"\\\\'\")
+              lines.append(\"    {\\n      id:    '%s',\\n      title: '%s',\\n      desc:  '%s',\\n    },\" % (v['id'], title_esc, desc_esc))
+
+          print('\\n'.join(lines))
+          " > /tmp/videos_block.txt
+
+          echo "Videos fetched:"
+          cat /tmp/videos_block.txt
+
+      - name: Update config.js videos section
+        run: |
+          python3 - <<'PYEOF'
+          import re
+
+          with open('config.js', 'r') as f:
+              content = f.read()
+
+          with open('/tmp/videos_block.txt', 'r') as f:
+              new_block = f.read().strip()
+
+          # Replace the videos array content between the [ and ]
+          pattern = r'(videos:\s*\[)[^\]]*(\])'
+          replacement = r'\g<1>\n' + new_block + r'\n  \g<2>'
+          updated = re.sub(pattern, replacement, content, flags=re.DOTALL)
+
+          with open('config.js', 'w') as f:
+              f.write(updated)
+
+          print("config.js updated successfully")
+          PYEOF
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git diff --quiet config.js && echo "No changes" && exit 0
+
+          git add config.js
+          git commit -m "chore: update YouTube videos [skip ci]"
+          git push
+          echo "Pushed updated config.js"
