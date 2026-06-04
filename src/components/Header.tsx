@@ -32,7 +32,7 @@ export default function Header({ solid, overHero }: HeaderProps) {
             className="btn btn-ghost btn-hamburger"
             aria-label="Menú"
             onClick={() => setMenu(true)}
-            style={{ width: 46, height: 46, padding: 0, placeItems: "center" }}
+            style={{ width: 46, height: 46, padding: 0, display: "grid", placeItems: "center" }}
           >
             <Icon name="menu" size={22} />
           </button>
